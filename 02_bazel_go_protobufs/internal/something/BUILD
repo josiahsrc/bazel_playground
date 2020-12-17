@@ -1,8 +1,8 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_library")
 
 go_library(
-    name = "internal",
+    name = "something",
     srcs = ["something.go"],
-    importpath = "github.com/josiahsrc/bazel_playground/01_bazel_gazelle/internal",
+    importpath = "github.com/josiahsrc/bazel_playground/02_bazel_go_protobufs/internal/something",
     visibility = ["//:__subpackages__"],
 )

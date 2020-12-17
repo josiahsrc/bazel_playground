@@ -1,14 +1,15 @@
 load("@io_bazel_rules_go//go:def.bzl", "go_binary", "go_library")
 
 go_library(
-    name = "example_lib",
+    name = "cli_lib",
     srcs = ["main.go"],
-    importpath = "github.com/josiahsrc/bazel_playground/01_bazel_gazelle/cmd/example",
+    importpath = "github.com/josiahsrc/bazel_playground/02_bazel_go_protobufs/cmd/cli",
     visibility = ["//visibility:private"],
+    deps = ["//internal/something"],
 )
 
 go_binary(
-    name = "example",
-    embed = [":example_lib"],
+    name = "cli",
+    embed = [":cli_lib"],
     visibility = ["//visibility:public"],
 )
