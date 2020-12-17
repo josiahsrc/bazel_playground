@@ -6,8 +6,8 @@ go_library(
     importpath = "github.com/josiahsrc/bazel_playground/01_bazel_gazelle/cmd/cli",
     visibility = ["//visibility:private"],
     deps = [
-        "//pkg/hello",
-        "//pkg/something",
+        "//01_bazel_gazelle/pkg/hello",
+        "//01_bazel_gazelle/pkg/something",
     ],
 )
 

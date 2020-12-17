@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"./another"
+	"github.com/josiahsrc/bazel_playground/00_golang_hello/another"
 )
 
 func add(a int, b int) (result int, message string) {
