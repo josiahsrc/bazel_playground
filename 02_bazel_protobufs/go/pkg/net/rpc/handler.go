@@ -2,6 +2,9 @@ package rpc
 
 import (
 	"fmt"
+
+	pb "github.com/josiahsrc/bazel_playground/02_bazel_protobufs/proto"
+
 	"google.golang.org/protobuf/proto"
 )
 

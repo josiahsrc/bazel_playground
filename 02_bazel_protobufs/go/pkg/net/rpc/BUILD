@@ -5,5 +5,8 @@ go_library(
     srcs = ["handler.go"],
     importpath = "github.com/josiahsrc/bazel_playground/02_bazel_protobufs/go/pkg/net/rpc",
     visibility = ["//visibility:public"],
-    deps = ["@org_golang_google_protobuf//proto"],
+    deps = [
+        "//02_bazel_protobufs/proto",
+        "@org_golang_google_protobuf//proto",
+    ],
 )
