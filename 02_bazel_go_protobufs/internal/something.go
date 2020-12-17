@@ -1,6 +1,10 @@
 package internal
 
+import (
+	"fmt"
+)
+
 // DoSomething does something
 func DoSomething() {
-	print("I did something")
+	fmt.Println("I did something")
 }
