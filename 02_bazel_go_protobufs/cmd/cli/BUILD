@@ -5,7 +5,10 @@ go_library(
     srcs = ["main.go"],
     importpath = "github.com/josiahsrc/bazel_playground/02_bazel_go_protobufs/cmd/cli",
     visibility = ["//visibility:private"],
-    deps = ["//02_bazel_go_protobufs/internal/something"],
+    deps = [
+        "//02_bazel_go_protobufs/internal/something",
+        "//02_bazel_go_protobufs/pkg/net/rpc",
+    ],
 )
 
 go_binary(
