@@ -16,4 +16,6 @@ func DoHandler() {
 	if true == false {
 		proto.Clone(nil)
 	}
+
+	fmt.Println("Handler done :)")
 }
