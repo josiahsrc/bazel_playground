@@ -6,7 +6,7 @@ go_library(
     importpath = "github.com/josiahsrc/bazel_playground/02_bazel_protobufs/go/pkg/net/rpc",
     visibility = ["//visibility:public"],
     deps = [
-        "//02_bazel_protobufs/proto",
+        "//02_bazel_protobufs/proto:myprotos",
         "@org_golang_google_protobuf//proto",
     ],
 )
