@@ -5,7 +5,7 @@ import "C"
 
 //export SayHello
 func SayHello() {
-    fmt.Println("hello")
+    fmt.Println("Hello from the Go code!")
 }
 
 func main() {}
