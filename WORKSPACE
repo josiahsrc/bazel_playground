@@ -1,4 +1,5 @@
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
 ## rules_java defines rules for generating Java code from Protocol Buffers.
 http_archive(
@@ -12,10 +13,36 @@ http_archive(
 )
 
 load("@rules_java//java:repositories.bzl", "rules_java_dependencies", "rules_java_toolchains")
-
 rules_java_dependencies()
-
 rules_java_toolchains()
+
+## Java maven rules
+
+RULES_JVM_EXTERNAL_TAG = "3.3"
+RULES_JVM_EXTERNAL_SHA = "d85951a92c0908c80bd8551002d66cb23c3434409c814179c0ff026b53544dab"
+
+# Download the jvm rules.
+http_archive(
+    name = "rules_jvm_external",
+    strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
+    sha256 = RULES_JVM_EXTERNAL_SHA,
+    url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
+)
+
+# Load macros and repository rules.
+load("@rules_jvm_external//:defs.bzl", "maven_install")
+
+# Install maven packages.
+maven_install(
+    artifacts = [
+        "com.sun.jna:jna:3.0.9",
+    ],
+    repositories = [
+        "https://repo1.maven.org/maven2",
+        "https://jcenter.bintray.com/",
+        "https://maven.google.com",
+    ],
+)
 
 ## rules_proto defines abstract rules for building Protocol Buffers.
 http_archive(

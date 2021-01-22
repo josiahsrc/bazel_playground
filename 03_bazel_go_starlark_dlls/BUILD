@@ -48,6 +48,6 @@ java_binary(
         "Main.java",
     ],
     deps = [
-        
+        "@maven//:com_sun_jna_jna",
     ],
 )
