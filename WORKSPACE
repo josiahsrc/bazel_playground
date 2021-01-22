@@ -35,7 +35,6 @@ rules_proto_dependencies()
 rules_proto_toolchains()
 
 ## io_bazel_rules_go for golang rules
-
 http_archive(
     name = "io_bazel_rules_go",
     sha256 = "6f111c57fd50baf5b8ee9d63024874dd2a014b069426156c55adbf6d3d22cb7b",

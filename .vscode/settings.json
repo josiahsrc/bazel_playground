@@ -1,5 +1,10 @@
 {
     "[go]": {
         "editor.formatOnSave": false
+    },
+    "files.associations": {
+        "*.txt": "plaintext",
+        "*.html": "html",
+        "iostream": "cpp"
     }
 }
