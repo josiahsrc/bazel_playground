@@ -7,10 +7,13 @@ package(default_visibility = ["//visibility:public"])
 # The shared libs
 go_library(
     name = "bridge",
-    srcs = ["hello.go"],
+    srcs = [
+        "hello.go",
+    ],
     importpath = "github.com/josiahsrc/bazel_playground/03_bazel_go_starlark_dlls",
 )
 
+# This is a statically linked binary and can be referenced with archive.cc
 go_binary(
     name = "archive",
     cgo = True,
@@ -20,15 +23,6 @@ go_binary(
     linkmode = "c-archive",
 )
 
-go_binary(
-    name = "shared",
-    cgo = True,
-    embed = [
-        ":bridge",
-    ],
-    linkmode = "c-shared",
-)
-
 # A c++ target to call the shared libs
 cc_binary(
     name = "cc_prog",
@@ -36,18 +30,12 @@ cc_binary(
         "main.cc",
     ],
     deps = [
-        "//03_bazel_go_starlark_dlls:archive.cc",
+        ":archive.cc",
     ],
 )
 
 # A java target to call the shared libs
-java_binary(
+alias(
     name = "java_prog",
-    main_class = "main.Main",
-    srcs = [
-        "Main.java",
-    ],
-    deps = [
-        "@maven//:com_sun_jna_jna",
-    ],
+    actual = "//03_bazel_go_starlark_dlls/src/main/java:binary",
 )
