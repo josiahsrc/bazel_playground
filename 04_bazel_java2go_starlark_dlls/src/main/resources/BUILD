@@ -9,7 +9,7 @@ cc_binary(
     name = "dynamic.so",
     linkshared = True,
     deps = [
-        "//03_bazel_go_dlls:archive.cc",
+        "//04_bazel_java2go_starlark_dlls:archive.cc",
     ],
 )
 

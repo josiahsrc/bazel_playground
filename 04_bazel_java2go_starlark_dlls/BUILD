@@ -10,7 +10,7 @@ go_library(
     srcs = [
         "hello.go",
     ],
-    importpath = "github.com/josiahsrc/bazel_playground/03_bazel_go_dlls",
+    importpath = "github.com/josiahsrc/bazel_playground/04_bazel_java2go_starlark_dlls",
 )
 
 # This is a statically linked binary and can be referenced with archive.cc
@@ -23,24 +23,13 @@ go_binary(
     linkmode = "c-archive",
 )
 
-# A c++ target to call the shared libs
-cc_binary(
-    name = "cc_prog",
-    srcs = [
-        "main.cc",
-    ],
-    deps = [
-        ":archive.cc",
-    ],
-)
-
 # A java target to call the shared libs
 alias(
     name = "java_prog",
-    actual = "//03_bazel_go_dlls/src/main/java:binary",
+    actual = "//04_bazel_java2go_starlark_dlls/src/main/java:binary",
 )
 
 alias(
     name = "java_prog_deploy.jar",
-    actual = "//03_bazel_go_dlls/src/main/java:binary_deploy.jar",
+    actual = "//04_bazel_java2go_starlark_dlls/src/main/java:binary_deploy.jar",
 )
