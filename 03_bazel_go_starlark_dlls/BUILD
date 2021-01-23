@@ -39,3 +39,8 @@ alias(
     name = "java_prog",
     actual = "//03_bazel_go_starlark_dlls/src/main/java:binary",
 )
+
+alias(
+    name = "java_prog_deploy.jar",
+    actual = "//03_bazel_go_starlark_dlls/src/main/java:binary_deploy.jar",
+)

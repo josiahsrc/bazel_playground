@@ -35,7 +35,7 @@ load("@rules_jvm_external//:defs.bzl", "maven_install")
 # Install maven packages.
 maven_install(
     artifacts = [
-        "com.sun.jna:jna:3.0.9",
+        "net.java.dev.jna:jna:5.6.0",
     ],
     repositories = [
         "https://repo1.maven.org/maven2",
@@ -56,9 +56,7 @@ http_archive(
 )
 
 load("@rules_proto//proto:repositories.bzl", "rules_proto_dependencies", "rules_proto_toolchains")
-
 rules_proto_dependencies()
-
 rules_proto_toolchains()
 
 ## io_bazel_rules_go for golang rules
@@ -72,9 +70,7 @@ http_archive(
 )
 
 load("@io_bazel_rules_go//go:deps.bzl", "go_register_toolchains", "go_rules_dependencies")
-
 go_rules_dependencies()
-
 go_register_toolchains(version = "1.15.5")
 
 ## Gazelle for autogenerating BUILD files
