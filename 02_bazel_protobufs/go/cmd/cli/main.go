@@ -1,14 +1,14 @@
 package main
 
-import (
-	"fmt"
+// import (
+// 	"fmt"
 
-	"github.com/josiahsrc/bazel_playground/02_bazel_protobufs/go/internal/something"
-	"github.com/josiahsrc/bazel_playground/02_bazel_protobufs/go/pkg/net/rpc"
-)
+// 	"github.com/josiahsrc/bazel_playground/02_bazel_protobufs/go/internal/something"
+// 	"github.com/josiahsrc/bazel_playground/02_bazel_protobufs/go/pkg/net/rpc"
+// )
 
-func main() {
-	fmt.Println("Hello example!!!")
-	something.DoSomething()
-	rpc.DoHandler()
-}
+// func main() {
+// 	fmt.Println("Hello example!!!")
+// 	something.DoSomething()
+// 	rpc.DoHandler()
+// }

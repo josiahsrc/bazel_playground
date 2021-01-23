@@ -15,9 +15,9 @@ java_binary(
         "@maven//:net_java_dev_jna_jna",
     ],
     resources = [
-        "//03_bazel_go_starlark_dlls/src/main/resources",
+        "//03_bazel_go_dlls/src/main/resources",
     ],
     jvm_flags = [
-        "-Djava.library.path=//03_bazel_go_starlark_dlls/src/main/resources"
+        "-Djava.library.path=//03_bazel_go_dlls/src/main/resources"
     ],
 )

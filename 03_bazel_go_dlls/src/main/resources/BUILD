@@ -9,14 +9,13 @@ cc_binary(
     name = "dynamic.so",
     linkshared = True,
     deps = [
-        "//03_bazel_go_starlark_dlls:archive.cc",
+        "//03_bazel_go_dlls:archive.cc",
     ],
 )
 
 filegroup(
     name = "resources",
     srcs = [
-        "data.txt",
         "dynamic.so",
     ],
     data = [

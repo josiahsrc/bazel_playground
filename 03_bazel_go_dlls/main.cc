@@ -1,5 +1,5 @@
 #include <iostream>
-#include "03_bazel_go_starlark_dlls/archive.h"
+#include "03_bazel_go_dlls/archive.h"
 
 int main()
 {
