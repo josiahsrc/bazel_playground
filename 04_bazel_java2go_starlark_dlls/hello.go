@@ -5,6 +5,7 @@ import (
 	"math"
 	"sort"
 	"sync"
+
 	// star "go.starlark.net/syntax"
 )
 
@@ -65,9 +66,26 @@ func Log(msg string) int {
 func ParseStarlarkCode(content string) *C.char {
 	fmt.Println("Parsing starlark...")
 
-	fmt.Println("----------------------------")
+	fmt.Println("--GO's INPUT CONTENT---------------------")
 	fmt.Printf("Content=%s\n", content)
-	fmt.Println("----------------------------")
+	fmt.Println("-----------------------------------------")
+	fmt.Println("")
+
+	fmt.Println("--ATTEMPTING TO PARSE STARLARK CONTENT---")
+
+	// filename := "example.star"
+
+	// A Mode value is a set of flags (or 0) that controls optional parser functionality.
+	// This is the third argument for this function.
+	// star.Mode()
+	
+	// f, err := star.Parse(filename, content, 0)
+	// fmt.Println("Results:")
+	// fmt.Println(f)
+	// fmt.Println(err)
+	
+	fmt.Println("-----------------------------------------")
+	fmt.Println("")
 
 	return C.CString("SUCCESS")
 }
