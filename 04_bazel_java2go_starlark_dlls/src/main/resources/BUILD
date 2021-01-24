@@ -17,6 +17,7 @@ filegroup(
     name = "resources",
     srcs = [
         "dynamic.so",
+        "example.star",
     ],
     data = [
         ":dynamic.so",

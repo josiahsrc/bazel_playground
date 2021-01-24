@@ -5,15 +5,25 @@ import java.io.*;
 import java.nio.file.*;
 import java.net.*;
 import java.util.*;
+import java.util.stream.*;
 import java.lang.reflect.*;
 
+// Examples taken from this helpful link:
+// https://github.com/vladimirvivien/go-cshared-examples/blob/master/Client.java
 public class Main {
-    public interface Archive extends Library {
-        public class GoString extends Structure {
+    public static interface Archive extends Library {
+        public static class GoString extends Structure {
             public static class ByValue extends GoString implements Structure.ByValue { }
 
             public String p;
             public long n;
+
+            public static GoString.ByValue fromValue(String value) {
+                GoString.ByValue res = new Archive.GoString.ByValue();
+                res.p = value;
+                res.n = value.length();
+                return res;
+            }
             
             protected List getFieldOrder() {
                 return Arrays.asList(new String[]{ "p", "n" });
@@ -41,15 +51,20 @@ public class Main {
         public int Log(GoString.ByValue str);
 
         public void Sort(GoSlice.ByValue vals);
+
+        public Pointer ParseStarlarkCode(GoString.ByValue content);
     }
 
     public static void main(String[] args) throws Exception {
         System.out.println("Hello from the Java code!"); 
         System.out.println("This is a dynamically linked example."); 
 
-        File file = Native.extractFromResourcePath("/dynamic.so");
-        System.out.println("EXTRACTED=" + file.toString()); 
-        Archive dll = (Archive) Native.load(file.toString(), Archive.class);
+        Archive dll;
+        {
+            File file = Native.extractFromResourcePath("/dynamic.so");
+            System.out.println("EXTRACTED=" + file.toString()); 
+            dll = (Archive) Native.load(file.toString(), Archive.class);
+        }
 
         // Print some info about the library
         {
@@ -70,9 +85,7 @@ public class Main {
         System.out.println(""); 
         System.out.println("Testing out Golang logging...");
         {
-            Archive.GoString.ByValue stringToLog = new Archive.GoString.ByValue();
-            stringToLog.p = "Hello, message sent to Go from Java!";
-            stringToLog.n = stringToLog.p.length();
+            Archive.GoString.ByValue stringToLog = Archive.GoString.fromValue("Hello, message sent to Go from Java!");
 
             System.out.println("Logged with count=" + dll.Log(stringToLog));
             System.out.println("Logged with count=" + dll.Log(stringToLog));
@@ -96,13 +109,56 @@ public class Main {
             dll.Sort(slice);
 
             System.out.print("GO Sort(53,11,5,2,88) = [");
-            long[] sorted = slice.data.getLongArray(0,nums.length);
+            long[] sorted = slice.data.getLongArray(0, nums.length);
 
             for(int i = 0; i < sorted.length; i++){
                 System.out.print(sorted[i] + " ");
             }
 
             System.out.println("]");
+        }
+
+        System.out.println(""); 
+        System.out.println("Testing out Golang STARLARK PARSING...");
+        {
+            // Path fileName = Path.of("resources/example.star");
+            // String content = Files.readString(fileName);
+            // System.out.println("Starlark content:\n" + content);
+
+            // Load a starlark file's content
+            String fileName = "/example.star";
+            String content;
+            {
+                InputStream fileStream = Main.class.getResourceAsStream(fileName);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(fileStream));
+                content = reader.lines().collect(Collectors.joining());
+            }
+
+            System.out.println("Raw " + fileName + " starlark file content:");
+            System.out.println("---START-------------------------------------"); 
+            System.out.println(content); 
+            System.out.println("---END---------------------------------------"); 
+
+            Archive.GoString.ByValue input = Archive.GoString.fromValue(content);
+
+            // Convert the response based on its pointer.
+            Pointer ptrOutput = dll.ParseStarlarkCode(input);
+            String strOutput = ptrOutput.getString(0);
+
+            // REMEMBER:
+            // Golang allocated the string, it's out job to free it. This isn't
+            // automatic memory managed because C instantiated the variable! Freeing
+            // the variable here.
+            Native.free(Pointer.nativeValue(ptrOutput));
+
+            System.out.println(""); 
+            System.out.println("Parse function output sent from Golang:");
+            System.out.println("---START-------------------------------------"); 
+            System.out.println(strOutput); 
+            System.out.println("---END---------------------------------------"); 
+
+            System.out.println(""); 
+            System.out.println("SUCCESSFULLY PARSED STARLARK FILE!"); 
         }
     }
 }

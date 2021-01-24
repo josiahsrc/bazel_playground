@@ -5,7 +5,7 @@ import (
 	"math"
 	"sort"
 	"sync"
-	// star "go.starlark.net/starlark"
+	// star "go.starlark.net/syntax"
 )
 
 import "C"
@@ -40,6 +40,36 @@ func Log(msg string) int {
 	fmt.Println(msg)
 	count++
 	return count
+}
+
+// NOTE: Careful here! You can't return a string from a
+// function. It will not be freed. You must return a
+// *C.char somehow and free it explicitely.
+
+// NOTE: You can return two values from a function and
+// the consumer can interpret it. See following example:
+//
+// Go functions can be exported for use by C code in the following way:
+//
+// //export MyFunction
+// func MyFunction(arg1, arg2 int, arg3 string) int64 {...}
+//
+// //export MyFunction2
+// func MyFunction2(arg1, arg2 int, arg3 string) (int64, *C.char) {...}
+// They will be available in the C code as:
+///
+// extern GoInt64 MyFunction(int arg1, int arg2, GoString arg3);
+// extern struct MyFunction2_return MyFunction2(int arg1, int arg2, GoString arg3);
+
+//export ParseStarlarkCode
+func ParseStarlarkCode(content string) *C.char {
+	fmt.Println("Parsing starlark...")
+
+	fmt.Println("----------------------------")
+	fmt.Printf("Content=%s\n", content)
+	fmt.Println("----------------------------")
+
+	return C.CString("SUCCESS")
 }
 
 func main() {}

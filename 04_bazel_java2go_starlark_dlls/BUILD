@@ -23,6 +23,17 @@ go_binary(
     linkmode = "c-archive",
 )
 
+# A c++ target to call the shared libs
+cc_binary(
+    name = "cc_prog",
+    srcs = [
+        "main.cc",
+    ],
+    deps = [
+        ":archive.cc",
+    ],
+)
+
 # A java target to call the shared libs
 alias(
     name = "java_prog",
