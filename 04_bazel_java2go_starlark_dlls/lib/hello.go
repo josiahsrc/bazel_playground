@@ -82,6 +82,10 @@ func ParseStarlarkCode(content string) *C.char {
 	fmt.Println("Results:")
 	fmt.Println(f)
 	fmt.Println(err)
+
+	for idx, stmt := range f.Stmts {
+		fmt.Println(idx, "=>", stmt)
+	}
 	
 	fmt.Println("-----------------------------------------")
 	fmt.Println("")

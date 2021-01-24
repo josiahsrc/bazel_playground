@@ -11,6 +11,11 @@ From a mod file:
 bazel run //:gazelle -- update-repos -from_file=04_bazel_java2go_starlark_dlls/go.mod
 ```
 
+## Java to Golang communication
+
+- Dynamically linked libraries seem like a great way to do interprocess communication
+- The types available for transferring data in between are primitive. It might be good to use protbufs and use file descriptors to transfer data in between
+
 ## Other Notes
 
 You have to run gazelle without update repos for it to work with generating build files `bazel run //:gazelle`.

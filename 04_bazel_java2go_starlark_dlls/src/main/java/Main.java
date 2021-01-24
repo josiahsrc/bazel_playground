@@ -131,7 +131,15 @@ public class Main {
             {
                 InputStream fileStream = Main.class.getResourceAsStream(fileName);
                 BufferedReader reader = new BufferedReader(new InputStreamReader(fileStream));
-                content = reader.lines().collect(Collectors.joining());
+
+                StringBuilder builder = new StringBuilder();
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    builder.append(line);
+                    builder.append(System.lineSeparator());
+                }
+
+                content = builder.toString();
             }
 
             System.out.println("Raw " + fileName + " starlark file content:");
@@ -146,7 +154,7 @@ public class Main {
             String strOutput = ptrOutput.getString(0);
 
             // REMEMBER:
-            // Golang allocated the string, it's out job to free it. This isn't
+            // Golang allocated the string, it's our job to free it. This isn't
             // automatic memory managed because C instantiated the variable! Freeing
             // the variable here.
             Native.free(Pointer.nativeValue(ptrOutput));
