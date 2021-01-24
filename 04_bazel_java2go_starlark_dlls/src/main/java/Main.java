@@ -7,6 +7,7 @@ import java.net.*;
 import java.util.*;
 import java.util.stream.*;
 import java.lang.reflect.*;
+import com.example.myprotos.*;
 
 // Examples taken from this helpful link:
 // https://github.com/vladimirvivien/go-cshared-examples/blob/master/Client.java
@@ -52,7 +53,7 @@ public class Main {
 
         public void Sort(GoSlice.ByValue vals);
 
-        public Pointer ParseStarlarkCode(GoString.ByValue content);
+        public void ParseStarlarkCode(GoString.ByValue msg);
     }
 
     public static void main(String[] args) throws Exception {
@@ -121,10 +122,6 @@ public class Main {
         System.out.println(""); 
         System.out.println("Testing out Golang STARLARK PARSING...");
         {
-            // Path fileName = Path.of("resources/example.star");
-            // String content = Files.readString(fileName);
-            // System.out.println("Starlark content:\n" + content);
-
             // Load a starlark file's content
             String fileName = "/example.star";
             String content;
@@ -147,10 +144,37 @@ public class Main {
             System.out.println(content); 
             System.out.println("---END---------------------------------------"); 
 
-            Archive.GoString.ByValue input = Archive.GoString.fromValue(content);
+            // Prepare the input via a protobuf
+            StarlarkParsing.ParseInput parseInput;
+            {
+                StarlarkParsing.ParseInput.Builder inputBuilder = StarlarkParsing.ParseInput.newBuilder();
+                inputBuilder.setFilename(fileName);
+                inputBuilder.setContent(content);
+                inputBuilder.setId(-300);
 
+                parseInput = inputBuilder.build();
+            }
+            
+            // Create a shared memory byte array and pass it to the go program.
+            // String protobufMessage = new String(parseInput.toByteArray());
+            int length = parseInput.toString().length();
+            System.out.println("Protobuf message length (Java): " + length);
+            System.out.println("FIELDS (Java):");
+            System.out.println("filename: " + parseInput.getFilename());
+            System.out.println("content: " + parseInput.getContent());
+            System.out.println("id: " + parseInput.getId());
+
+            // byte[] protobufInputArr = parseInput.toByteArray();
+            // Pointer protobufInputPtr = new Memory(protobufInputArr.length);
+            // protobufInputPtr.write(0, protobufInputArr, 0, protobufInputArr.length);
+
+            // We'll be sending the serialized protobuf message to cgo
+            Archive.GoString.ByValue input = Archive.GoString.fromValue(parseInput.toString());
+            dll.ParseStarlarkCode(input);
+
+            /*
             // Convert the response based on its pointer.
-            Pointer ptrOutput = dll.ParseStarlarkCode(input);
+            Pointer ptrOutput = dll.ParseStarlarkCode(protobufInputPtr);
             String strOutput = ptrOutput.getString(0);
 
             // REMEMBER:
@@ -164,6 +188,7 @@ public class Main {
             System.out.println("---START-------------------------------------"); 
             System.out.println(strOutput); 
             System.out.println("---END---------------------------------------"); 
+            */
 
             System.out.println(""); 
             System.out.println("SUCCESSFULLY PARSED STARLARK FILE!"); 

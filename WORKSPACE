@@ -188,8 +188,8 @@ go_repository(
     name = "com_github_golang_protobuf",
     build_extra_args = ["-exclude=test"],
     importpath = "github.com/golang/protobuf",
-    sum = "h1:ZFgWrT+bLgsYPirOnRfKLYJLvssAegOj/hgyMFdJZe0=",
-    version = "v1.4.1",
+    sum = "h1:JjCZWpVbqXDqFVmTfYWEVTMIYrL/NPdPSCHPJ0T/raM=",
+    version = "v1.4.3",
 )
 
 go_repository(
@@ -216,6 +216,7 @@ go_repository(
     version = "v0.26.0",
 )
 
+# Using build_extra_args = ["-exclude=test"] would also work here I think
 go_repository(
     name = "net_starlark_go",
     build_extra_args = [

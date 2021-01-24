@@ -14,6 +14,7 @@ java_binary(
         "//04_bazel_java2go_starlark_dlls/src/main/resources",
     ],
     deps = [
+        "//04_bazel_java2go_starlark_dlls/proto:myprotos_java_proto",
         "@maven//:net_java_dev_jna_jna",
     ],
 )

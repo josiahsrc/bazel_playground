@@ -6,7 +6,9 @@ import (
 	"sort"
 	"sync"
 
-	star "go.starlark.net/syntax"
+	myprotos "example.com/myprotos"
+	proto "github.com/golang/protobuf/proto"
+	// star "go.starlark.net/syntax"
 )
 
 import "C"
@@ -63,34 +65,61 @@ func Log(msg string) int {
 // extern struct MyFunction2_return MyFunction2(int arg1, int arg2, GoString arg3);
 
 //export ParseStarlarkCode
-func ParseStarlarkCode(content string) *C.char {
-	fmt.Println("Parsing starlark...")
+func ParseStarlarkCode(content string) {
+	fmt.Println("##################################")
+	fmt.Println("## PARSING STARLARK FROM GOLANG ##")
+	fmt.Println("##################################")
 
-	fmt.Println("--GO's INPUT CONTENT---------------------")
-	fmt.Printf("Content=%s\n", content)
-	fmt.Println("-----------------------------------------")
 	fmt.Println("")
+	fmt.Println("--UNMARSHAL INPUT------------------------")
+	fmt.Printf("Protobuf message length (Golang): %d\n", len(content))
 
-	fmt.Println("--ATTEMPTING TO PARSE STARLARK CONTENT---")
-
-	// A Mode value is a set of flags (or 0) that controls optional parser functionality.
-	// This is the third argument for this function.
-	// star.Mode()
-	
-	filename := "example.star"
-	f, err := star.Parse(filename, content, 0)
-	fmt.Println("Results:")
-	fmt.Println(f)
-	fmt.Println(err)
-
-	for idx, stmt := range f.Stmts {
-		fmt.Println(idx, "=>", stmt)
+	// fmt.Printf("Content to unmarshal=%s\n", content)
+	parseinput := &myprotos.ParseInput{}
+	err := proto.UnmarshalText(content, parseinput)
+	if err != nil {
+		fmt.Printf("Fatal error: %s\n", err)
+	} else {
+		fmt.Println("Unmarshal was successful.")
 	}
-	
-	fmt.Println("-----------------------------------------")
-	fmt.Println("")
 
-	return C.CString("SUCCESS")
+	fmt.Println("")
+	fmt.Println("FIELDS (Golang):")
+	fmt.Printf("filename: %s\n", parseinput.Filename)
+	fmt.Printf("content: %s\n", parseinput.Content)
+	fmt.Printf("id: %d\n", parseinput.Id)
+	fmt.Println("-----------------------------------------")
+
+	// fmt.Println("")
+	// fmt.Println("--GO's INPUT CONTENT---------------------")
+	// fmt.Printf("Content=%s\n", content)
+	// fmt.Println("-----------------------------------------")
+	// fmt.Println("")
+
+	// fmt.Println("--ATTEMPTING TO PARSE STARLARK CONTENT---")
+
+	// // A Mode value is a set of flags (or 0) that controls optional parser functionality.
+	// // This is the third argument for this function.
+	// // star.Mode()
+	
+	// filename := "example.star"
+	// f, err := star.Parse(filename, content, 0)
+	// fmt.Println("Results:")
+	// fmt.Println(f)
+	// fmt.Println(err)
+
+	// for idx, stmt := range f.Stmts {
+	// 	fmt.Println(idx, "=>", stmt)
+	// }
+	
+	// fmt.Println("-----------------------------------------")
+	// fmt.Println("")
+
+	fmt.Println("##########")
+	fmt.Println("## DONE ##")
+	fmt.Println("##########")
+
+	// return C.CString("SUCCESS")
 }
 
 func main() {}

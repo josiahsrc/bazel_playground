@@ -1,0 +1,19 @@
+syntax = "proto3";
+package example;
+
+option java_package = "com.example.myprotos";
+option java_outer_classname = "StarlarkParsing";
+
+option go_package = "example.com/myprotos";
+
+message ParseInput {
+    string filename = 1;
+    string content = 2;
+    int32 id = 3;
+}
+
+message ParseOutput {
+    string message = 1;
+    int32 id = 2;
+    bool success = 3;
+}

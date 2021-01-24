@@ -11,10 +11,20 @@ From a mod file:
 bazel run //:gazelle -- update-repos -from_file=04_bazel_java2go_starlark_dlls/go.mod
 ```
 
+## Go stuff
+
+Install a package
+
+```
+go get github.com/golang/protobuf/proto
+go get github.com/golang/protobuf/proto@vX.Y.Z
+```
+
 ## Java to Golang communication
 
 - Dynamically linked libraries seem like a great way to do interprocess communication
 - The types available for transferring data in between are primitive. It might be good to use protbufs and use file descriptors to transfer data in between
+- protobufs and strings seem like a greate way to transfer data. The domain is shared
 
 ## Other Notes
 
