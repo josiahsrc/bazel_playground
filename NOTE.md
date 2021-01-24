@@ -1,5 +1,18 @@
 # Notes
 
+## Gazelle
+
+Gazelle is VERY helpful. Here are helpful links to use it
+- Updating build files from go.mod file: https://github.com/bazelbuild/bazel-gazelle#update-repos
+
+From a mod file:
+
+```
+bazel run //:gazelle -- update-repos -from_file=04_bazel_java2go_starlark_dlls/go.mod
+```
+
+## Other Notes
+
 You have to run gazelle without update repos for it to work with generating build files `bazel run //:gazelle`.
 
 You have to run gazelle with the repos option to update the dependencies automagically `bazel run //:gazelle -- update-repos -from_file=go.mod`.
@@ -27,3 +40,26 @@ Left off here
 - Spin up two programs, java client and server, communicate between the two.
 
 Could possibly switch over to go to make an LSP? https://pkg.go.dev/github.com/sourcegraph/go-lsp
+
+## Other
+
+```
+# The shared libs
+go_library(
+    name = "bridge",
+    srcs = [
+        "hello.go",
+    ],
+    importpath = "github.com/josiahsrc/bazel_playground/04_bazel_java2go_starlark_dlls/lib",
+)
+
+# This is a statically linked binary and can be referenced with archive.cc
+go_binary(
+    name = "archive",
+    cgo = True,
+    embed = [
+        ":bridge",
+    ],
+    linkmode = "c-archive",
+)
+```
