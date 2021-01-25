@@ -11,6 +11,13 @@ import com.example.myprotos.*;
 
 // Examples taken from this helpful link:
 // https://github.com/vladimirvivien/go-cshared-examples/blob/master/Client.java
+//
+// NOTE:
+// It may also be possible to do complex communication without using protobufs.
+// The JNA api allows for complex structures. The downside is that it looks hard
+// to manage and you'll have to define the structures on both the consumer and
+// producer side. Yuck! This is worth considering though. It could allow for a
+// speed up, assuming speed is an issue. See link in readme.
 public class Main {
     public static interface Archive extends Library {
         public static class GoString extends Structure {
@@ -53,7 +60,7 @@ public class Main {
 
         public void Sort(GoSlice.ByValue vals);
 
-        public void ParseStarlarkCode(GoString.ByValue msg);
+        public Pointer ParseStarlarkCode(GoString.ByValue in);
     }
 
     public static void main(String[] args) throws Exception {
@@ -144,7 +151,7 @@ public class Main {
             System.out.println(content); 
             System.out.println("---END---------------------------------------"); 
 
-            // Prepare the input via a protobuf
+            // Prepare the input for protobufs.
             StarlarkParsing.ParseInput parseInput;
             {
                 StarlarkParsing.ParseInput.Builder inputBuilder = StarlarkParsing.ParseInput.newBuilder();
@@ -164,32 +171,54 @@ public class Main {
             System.out.println("content: " + parseInput.getContent());
             System.out.println("id: " + parseInput.getId());
 
-            // byte[] protobufInputArr = parseInput.toByteArray();
-            // Pointer protobufInputPtr = new Memory(protobufInputArr.length);
-            // protobufInputPtr.write(0, protobufInputArr, 0, protobufInputArr.length);
-
-            // We'll be sending the serialized protobuf message to cgo
-            Archive.GoString.ByValue input = Archive.GoString.fromValue(parseInput.toString());
-            dll.ParseStarlarkCode(input);
-
             /*
-            // Convert the response based on its pointer.
-            Pointer ptrOutput = dll.ParseStarlarkCode(protobufInputPtr);
-            String strOutput = ptrOutput.getString(0);
-
-            // REMEMBER:
-            // Golang allocated the string, it's our job to free it. This isn't
-            // automatic memory managed because C instantiated the variable! Freeing
-            // the variable here.
-            Native.free(Pointer.nativeValue(ptrOutput));
-
-            System.out.println(""); 
-            System.out.println("Parse function output sent from Golang:");
-            System.out.println("---START-------------------------------------"); 
-            System.out.println(strOutput); 
-            System.out.println("---END---------------------------------------"); 
+            // Setup the input. This memory must be allocated because we are sending
+            // a byte array to CGo. This byte array is the marshalled version of our
+            // protobuffer. Using a byte array is necessary because the lenght must
+            // be explicitly defined. Otherwise, if we treat it as a string, the proto
+            // may exit early when marshaling because an "\0" was reached.
+            byte[] inputArr = parseInput.toByteArray();
+            int inputSize = inputArr.length;
+            Pointer inputPtr = new Memory(inputSize);
+            inputPtr.write(0, inputArr, 0, inputSize);
             */
 
+            // Setup the input. Encode as a base64 to avoid null-terminating characters.
+            // Using bytes would be more performant. The base64 encoding will be 133% the
+            // size had we just used bytes.
+            String rawInput = Base64.getEncoder().encodeToString(parseInput.toByteArray());
+
+            // The message we are sending is for cgo.
+            Archive.GoString.ByValue goRawInput = Archive.GoString.fromValue(rawInput);
+
+            System.out.println(""); 
+            System.out.println("MEMORY (Java):"); 
+            System.out.println("length: " + rawInput.length()); 
+
+            // Call the parser. The output will be a pointer to an already allocated string.
+            // We must "dereference" the string and store it locally.
+            Pointer rawPtrOutput = dll.ParseStarlarkCode(goRawInput);
+            String rawOutput = rawPtrOutput.getString(0);
+
+            // NOTICE:
+            // Golang allocated some memory, it's our job to free it. This isn't
+            // automatic memory managed because C instantiated the variable! Freeing
+            // the memory here.
+            Native.free(Pointer.nativeValue(rawPtrOutput));
+
+            System.out.println(""); 
+            System.out.println("Loading protobuf output sent from Golang to Java:");
+            System.out.println("---START-------------------------------------"); 
+
+            // Get our output. This was sent from Golang.
+            byte[] outputBytes = Base64.getDecoder().decode(rawOutput);
+            StarlarkParsing.ParseOutput output = StarlarkParsing.ParseOutput.parseFrom(outputBytes);
+
+            System.out.println("output:"); 
+            System.out.println("message: " + output.getMessage()); 
+            System.out.println("success: " + output.getSuccess()); 
+
+            System.out.println("---END---------------------------------------"); 
             System.out.println(""); 
             System.out.println("SUCCESSFULLY PARSED STARLARK FILE!"); 
         }

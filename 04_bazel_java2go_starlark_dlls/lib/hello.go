@@ -5,10 +5,13 @@ import (
 	"math"
 	"sort"
 	"sync"
+	"encoding/base64"
+	"strconv" // Convert string to int
+	// "unsafe" // Used for accessing pointers
 
 	myprotos "example.com/myprotos"
 	proto "github.com/golang/protobuf/proto"
-	// star "go.starlark.net/syntax"
+	star "go.starlark.net/syntax"
 )
 
 import "C"
@@ -47,7 +50,7 @@ func Log(msg string) int {
 
 // NOTE: Careful here! You can't return a string from a
 // function. It will not be freed. You must return a
-// *C.char somehow and free it explicitely.
+// *C.char and free it explicitly.
 
 // NOTE: You can return two values from a function and
 // the consumer can interpret it. See following example:
@@ -65,18 +68,29 @@ func Log(msg string) int {
 // extern struct MyFunction2_return MyFunction2(int arg1, int arg2, GoString arg3);
 
 //export ParseStarlarkCode
-func ParseStarlarkCode(content string) {
+func ParseStarlarkCode(in string) (out *C.char) {
+	fmt.Println("")
 	fmt.Println("##################################")
 	fmt.Println("## PARSING STARLARK FROM GOLANG ##")
 	fmt.Println("##################################")
 
 	fmt.Println("")
-	fmt.Println("--UNMARSHAL INPUT------------------------")
-	fmt.Printf("Protobuf message length (Golang): %d\n", len(content))
+	fmt.Println("MEMORY (Golang):")
+	fmt.Printf("length: %d\n", len(in))
 
-	// fmt.Printf("Content to unmarshal=%s\n", content)
+	fmt.Println("")
+	fmt.Println("--UNMARSHAL INPUT------------------------")
+	fmt.Printf("Protobuf message length (Golang): %d\n", len(in))
+
+	bytes, err := base64.StdEncoding.DecodeString(in)
+	if err != nil {
+		fmt.Printf("Failed to deode input: %s\n", err)
+	} else {
+		fmt.Println("Decode was successful.")
+	}
+
 	parseinput := &myprotos.ParseInput{}
-	err := proto.UnmarshalText(content, parseinput)
+	err = proto.Unmarshal(bytes, parseinput)
 	if err != nil {
 		fmt.Printf("Fatal error: %s\n", err)
 	} else {
@@ -90,36 +104,41 @@ func ParseStarlarkCode(content string) {
 	fmt.Printf("id: %d\n", parseinput.Id)
 	fmt.Println("-----------------------------------------")
 
-	// fmt.Println("")
-	// fmt.Println("--GO's INPUT CONTENT---------------------")
-	// fmt.Printf("Content=%s\n", content)
-	// fmt.Println("-----------------------------------------")
-	// fmt.Println("")
-
-	// fmt.Println("--ATTEMPTING TO PARSE STARLARK CONTENT---")
-
-	// // A Mode value is a set of flags (or 0) that controls optional parser functionality.
-	// // This is the third argument for this function.
-	// // star.Mode()
+	fmt.Println("--ATTEMPTING TO PARSE STARLARK CONTENT---")
+	// A Mode value is a set of flags (or 0) that controls optional parser functionality.
+	// This is the third argument for starlark's parse function.
+	// star.Mode()
 	
-	// filename := "example.star"
-	// f, err := star.Parse(filename, content, 0)
-	// fmt.Println("Results:")
-	// fmt.Println(f)
-	// fmt.Println(err)
+	// Parse the content
+	f, err := star.Parse(parseinput.Filename, parseinput.Content, 0)
+	parseoutput := &myprotos.ParseOutput{}
 
-	// for idx, stmt := range f.Stmts {
-	// 	fmt.Println(idx, "=>", stmt)
-	// }
-	
-	// fmt.Println("-----------------------------------------")
-	// fmt.Println("")
+	// Package response
+	if err != nil {
+		parseoutput.Success = false
+		parseoutput.Message = "There was an error during parsing."
+		fmt.Printf("Starlark parse error: %s\n", err)
+	} else {
+		parseoutput.Success = true
+		parseoutput.Message = "Successfully parsed with " + strconv.Itoa(len(f.Stmts)) + " statements."
+		fmt.Println("Parse was successful!")
+	}
+
+	fmt.Println("STATEMENTS:")
+	for idx, stmt := range f.Stmts {
+		fmt.Println(idx, "=>", stmt)
+	}
+
+	fmt.Println("-----------------------------------------")
+	fmt.Println("")
 
 	fmt.Println("##########")
 	fmt.Println("## DONE ##")
 	fmt.Println("##########")
 
-	// return C.CString("SUCCESS")
+	bytes, err = proto.Marshal(parseoutput)
+	resstr := base64.StdEncoding.EncodeToString(bytes)
+	return C.CString(resstr)
 }
 
 func main() {}
