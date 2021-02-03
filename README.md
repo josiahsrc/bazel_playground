@@ -35,3 +35,9 @@ bazel run 03_bazel_go_dlls:cc_prog
 ```
 bazel run 04_bazel_java2go_starlark_dlls:java_prog
 ```
+
+## 05_go_starlark_interp
+
+```
+bazel run 05_go_starlark_interp:prog
+```
